@@ -420,7 +420,7 @@
         }
 
         .stat-box h4 {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 800;
             background: linear-gradient(135deg, #6366f1, #a855f7);
             -webkit-background-clip: text;
@@ -915,12 +915,10 @@
   <option value="10">10- Post cardio-pulmonary bypass</option>
   <option value="11">11- Extensive intestinal resection with serum albumin < 2 g/dl</option>
   <option value="12">12- > 40% resection of the liver with serum albumin < 2 g/dl</option>
-  <option value="13">
-    13- Organ transplantation (Postoperative liver transplant) 
+  <option value="13">13- Organ transplantation (Postoperative liver transplant) 
     - Serum albumin < 2.5 g/dl 
     - Hematocrit > 30% 
-    - Pulmonary capillary wedge pressure < 12 mmHg
-  </option>
+    - Pulmonary capillary wedge pressure < 12 mmHg</option>
   <option value="14">14- Burns</option>
   <option value="15">15- Hyperbilirubinemia of the newborn</option>
   <option value="16">
@@ -950,7 +948,7 @@
         <!-- Tigecycline Form -->
         <section class="form-section" id="tigecyclineForm">
             <div class="mb-6">
-                <h2 class="text-2xl font-bold section-title" style="color: #ec4899;">نموذج التايغيسايكلين</h2>
+                <h2 class="text-2xl font-bold section-title" style="color: #ec4899;">Tigecycline Form</h2>
                 <p class="text-sm mt-3" style="color: var(--text-muted);">Tigecycline Therapy Record</p>
             </div>
             <div class="neu-card space-y-5">
@@ -994,7 +992,7 @@
         <!-- Colistin Form -->
         <section class="form-section" id="colistinForm">
             <div class="mb-6">
-                <h2 class="text-2xl font-bold section-title" style="color: #10b981;">نموذج الكوليستين</h2>
+                <h2 class="text-2xl font-bold section-title" style="color: #10b981;">Colistin Form</h2>
                 <p class="text-sm mt-3" style="color: var(--text-muted);">Colistin Therapy Record</p>
             </div>
             <div class="neu-card space-y-5">
@@ -1142,6 +1140,7 @@
                                     <label class="form-label required">Dosing</label>
                                     <select id="meroPDose" class="form-input" required>
                                         <option value="">Select</option>
+                                        <option value="2000 mg">2000 mg</option>
                                         <option value="1000 mg">1000 mg</option>
                                         <option value="500 mg">500 mg</option>
                                     </select>
@@ -1161,8 +1160,8 @@
                                 <label class="form-label required" style="color: #f43f5e;">Sensitivity Test</label>
                                 <select id="meroPSens" class="form-input" required>
                                     <option value="">Select</option>
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
+                                    <option value="نعم">نعم</option>
+                                    <option value="كلا">كلا</option>
                                 </select>
                             </div>
                             <div class="divider"></div>
@@ -1278,21 +1277,21 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/>
                 </svg>
-                <span>ألبومين</span>
+                <span>albumin</span>
             </button>
             <button class="nav-item tigecycline" onclick="switchForm('tigecycline')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M10.5 20.5H3.5a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-7"/>
                     <path d="M8 7v7M12 7v7M17 7v7"/>
                 </svg>
-                <span>تايغيسايكلين</span>
+                <span>tigecycline</span>
             </button>
             <button class="nav-item colistin" onclick="switchForm('colistin')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
                     <path d="m3.3 7 8.7 5 8.7-5M12 22V12"/>
                 </svg>
-                <span>كوليستين</span>
+                <span>colistin</span>
             </button>
             <button class="nav-item meropenem" onclick="switchForm('meropenem')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
