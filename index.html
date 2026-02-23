@@ -3,25 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Drug Dispensing">
+    <meta name="description" content="نظام إدارة وصرف الأدوية للمستشفيات">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json/.">
+    
+    <!-- Fallback icon for iOS -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236366f1' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white'>R</text></svg>">
+    
     <title>نظام صرف الأدوية - مستشفى بغداد التعليمي</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { 'tajawal': ['Tajawal', 'sans-serif'], 'space': ['Space Grotesk', 'sans-serif'] },
+                    fontFamily: { 'ibm': ['IBM Plex Sans Arabic', 'sans-serif'], 'outfit': ['Outfit', 'sans-serif'] },
                     colors: {
-                        ivig: { 500: '#9333ea', 600: '#7c3aed' },
-                        albumin: { 500: '#0891b2', 600: '#0e7490' },
-                        tigecycline: { 500: '#db2777', 600: '#be185d' },
-                        colistin: { 500: '#059669', 600: '#047857' },
-                        meropenem: { 500: '#4f46e5', 600: '#4338ca' }
+                        ivig: { 500: '#a855f7', 600: '#9333ea' },
+                        albumin: { 500: '#06b6d4', 600: '#0891b2' },
+                        tigecycline: { 500: '#ec4899', 600: '#db2777' },
+                        colistin: { 500: '#10b981', 600: '#059669' },
+                        meropenem: { 500: '#6366f1', 600: '#4f46e5' }
                     }
                 }
             }
@@ -29,187 +41,719 @@
     </script>
     <style>
         :root {
-            --bg-primary: #f0f4f8;
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.6);
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
             --text-muted: #64748b;
-            --accent: #4f46e5;
+            --accent: #6366f1;
+            --neu-light: rgba(255,255,255,0.05);
+            --neu-dark: rgba(0,0,0,0.4);
         }
 
         * { box-sizing: border-box; }
 
         body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background: var(--bg-primary);
             min-height: 100vh;
             color: var(--text-primary);
             overflow-x: hidden;
         }
 
-        /* Elegant Background Orbs */
-        .orb {
-            position: fixed; border-radius: 50%; filter: blur(60px); opacity: 0.5; pointer-events: none; z-index: 0; animation: float 20s ease-in-out infinite;
-        }
-        .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #ffffff 0%, transparent 70%); top: -150px; right: -100px; }
-        .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #c084fc 0%, transparent 70%); bottom: 10%; left: -100px; opacity: 0.3; }
-        .orb-3 { width: 350px; height: 350px; background: radial-gradient(circle, #22d3ee 0%, transparent 70%); top: 40%; right: -50px; opacity: 0.3; }
-
-        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-10px, 10px); } }
-
-        /* Glass Effect - Light Mode */
-        .glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+        /* Animated Mesh Background */
+        .mesh-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            overflow: hidden;
         }
 
-        /* Form Inputs - Light Mode */
+        .mesh-gradient {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            top: -25%; left: -25%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 30%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
+            animation: meshMove 30s ease-in-out infinite;
+        }
+
+        @keyframes meshMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, 3%) rotate(2deg); }
+            66% { transform: translate(-2%, 1%) rotate(-1deg); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 50%;
+            animation: particleFloat 15s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
+            50% { transform: translateY(-100px) translateX(20px); opacity: 0.8; }
+        }
+
+        /* Neumorphic Cards */
+        .neu-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(30, 41, 59, 0.6));
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 
+                8px 8px 20px rgba(0, 0, 0, 0.4),
+                -4px -4px 12px rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .neu-card-inset {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.4));
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 
+                inset 4px 4px 10px rgba(0, 0, 0, 0.3),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Form Inputs - Neumorphic */
         .form-input {
-            width: 100%; padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(203, 213, 225, 0.8);
-            border-radius: 12px; color: #1e293b;
-            font-size: 16px; font-family: 'Tajawal', sans-serif;
-            transition: all 0.3s ease; outline: none;
+            width: 100%;
+            padding: 16px 18px;
+            background: linear-gradient(145deg, #1a2535, #243347);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            box-shadow: 
+                inset 3px 3px 8px rgba(0, 0, 0, 0.3),
+                inset -1px -1px 4px rgba(255, 255, 255, 0.02);
         }
+
         .form-input:focus {
             border-color: var(--accent);
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 
+                inset 3px 3px 8px rgba(0, 0, 0, 0.3),
+                inset -1px -1px 4px rgba(255, 255, 255, 0.02),
+                0 0 0 3px rgba(99, 102, 241, 0.15);
         }
-        .form-input::placeholder { color: #94a3b8; }
+
+        .form-input::placeholder { color: var(--text-muted); }
         
         select.form-input {
-            cursor: pointer; appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: left 12px center; background-size: 18px; padding-left: 40px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 14px center;
+            background-size: 18px;
+            padding-left: 44px;
         }
-        select.form-input option { background: #ffffff; color: #1e293b; }
 
-        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #334155; }
-        .form-label.required::after { content: ' *'; color: #ef4444; }
+        select.form-input option { 
+            background: #1e293b; 
+            color: var(--text-primary);
+            padding: 12px;
+        }
 
-        /* Buttons - Light Mode */
+        .form-label { 
+            display: block; 
+            margin-bottom: 10px; 
+            font-weight: 600; 
+            font-size: 13px; 
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .form-label.required::after { 
+            content: ' *'; 
+            color: #f43f5e; 
+        }
+
+        /* Buttons - Neumorphic Elevated */
         .btn-submit {
-            width: 100%; padding: 16px 24px; border-radius: 14px; font-weight: 700; font-size: 16px;
-            font-family: 'Tajawal', sans-serif; cursor: pointer; transition: all 0.3s ease; border: none;
-            display: flex; align-items: center; justify-content: center; gap: 10px; color: white;
+            width: 100%;
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
-        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        .btn-ivig { background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%); box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3); }
-        .btn-albumin { background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%); box-shadow: 0 4px 15px rgba(8, 145, 178, 0.3); }
-        .btn-tigecycline { background: linear-gradient(135deg, #db2777 0%, #be185d 100%); box-shadow: 0 4px 15px rgba(219, 39, 119, 0.3); }
-        .btn-colistin { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); }
-        .btn-meropenem { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+            border-radius: 16px 16px 0 0;
+            pointer-events: none;
+        }
 
-        /* Navigation - Light Mode */
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .btn-submit:disabled { 
+            opacity: 0.6; 
+            cursor: not-allowed; 
+        }
+
+        .btn-ivig { 
+            background: linear-gradient(145deg, #a855f7, #9333ea);
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-albumin { 
+            background: linear-gradient(145deg, #06b6d4, #0891b2);
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-tigecycline { 
+            background: linear-gradient(145deg, #ec4899, #db2777);
+            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-colistin { 
+            background: linear-gradient(145deg, #10b981, #059669);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-meropenem { 
+            background: linear-gradient(145deg, #6366f1, #4f46e5);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        /* Navigation - Neumorphic */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-            padding: 8px 12px; padding-bottom: max(8px, env(safe-area-inset-bottom));
-            transition: opacity 0.3s, transform 0.3s;
+            position: fixed;
+            bottom: 0;
+            left: 0; right: 0;
+            z-index: 100;
+            padding: 12px 16px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .bottom-nav.hidden { opacity: 0; pointer-events: none; transform: translateY(100%); }
+
+        .bottom-nav.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(100%);
+        }
+
+        .nav-container {
+            background: linear-gradient(145deg, #1e293b, #162032);
+            border-radius: 24px;
+            padding: 8px;
+            box-shadow: 
+                0 -4px 20px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px;
-            border-radius: 16px; cursor: pointer; transition: all 0.3s ease; background: transparent;
-            border: none; color: #64748b; flex: 1; font-family: 'Tajawal', sans-serif; font-size: 11px; font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 10px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            flex: 1;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            position: relative;
         }
-        .nav-item.active { background: rgba(255,255,255,0.8); color: var(--text-primary); transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .nav-item svg { width: 24px; height: 24px; transition: all 0.3s ease; }
-        .nav-item.active svg { transform: scale(1.1); }
 
-        .nav-item.ivig.active svg { color: #9333ea; }
-        .nav-item.meropenem.active svg { color: #4f46e5; }
-        .nav-item.albumin.active svg { color: #0891b2; }
-        .nav-item.tigecycline.active svg { color: #db2777; }
-        .nav-item.colistin.active svg { color: #059669; }
+        .nav-item.active {
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1));
+            color: var(--text-primary);
+            box-shadow: 
+                inset 2px 2px 6px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(99, 102, 241, 0.2);
+        }
 
-        /* Toast - Light Mode */
-        .toast-container { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease forwards; pointer-events: auto; min-width: 280px; color: white; }
-        .toast.success { background: rgba(5, 150, 105, 0.95); backdrop-filter: blur(10px); }
-        .toast.error { background: rgba(220, 38, 38, 0.95); backdrop-filter: blur(10px); }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            transition: all 0.3s ease;
+        }
 
-        .form-section { display: none; animation: fadeIn 0.4s ease forwards; }
+        .nav-item.active svg { transform: scale(1.15); }
+
+        .nav-item.ivig.active { background: linear-gradient(145deg, rgba(168, 85, 247, 0.25), rgba(168, 85, 247, 0.1)); }
+        .nav-item.ivig.active svg { color: #a855f7; }
+
+        .nav-item.meropenem.active { background: linear-gradient(145deg, rgba(99, 102, 241, 0.25), rgba(99, 102, 241, 0.1)); }
+        .nav-item.meropenem.active svg { color: #6366f1; }
+
+        .nav-item.albumin.active { background: linear-gradient(145deg, rgba(6, 182, 212, 0.25), rgba(6, 182, 212, 0.1)); }
+        .nav-item.albumin.active svg { color: #06b6d4; }
+
+        .nav-item.tigecycline.active { background: linear-gradient(145deg, rgba(236, 72, 153, 0.25), rgba(236, 72, 153, 0.1)); }
+        .nav-item.tigecycline.active svg { color: #ec4899; }
+
+        .nav-item.colistin.active { background: linear-gradient(145deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.1)); }
+        .nav-item.colistin.active svg { color: #10b981; }
+
+        /* Toast - Dark Mode */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            padding: 16px 24px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toastSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            pointer-events: auto;
+            min-width: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toast.success {
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9));
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+        }
+
+        .toast.error {
+            background: linear-gradient(145deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9));
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+        }
+
+        @keyframes toastSlide {
+            from { opacity: 0; transform: translateY(-30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .form-section {
+            display: none;
+            animation: sectionFade 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
         .form-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .readonly-field { padding: 12px 16px; background: rgba(241, 245, 249, 0.8); border: 1px solid rgba(203, 213, 225, 0.5); border-radius: 10px; color: #475569; font-size: 14px; }
+        @keyframes sectionFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .readonly-field {
+            padding: 14px 18px;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.6), rgba(30, 41, 59, 0.3));
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.2);
+        }
 
         /* Meropenem Specific Styles */
-        .mero-container { min-height: 100vh; padding-bottom: 90px; }
+        .mero-container { min-height: 100vh; padding-bottom: 100px; }
         .mero-page { display: none; }
         .mero-page.active { display: block; }
-        .mero-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .stat-box { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255,255,255,0.9); border-radius: 14px; padding: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .stat-box h4 { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); }
-        .stat-box p { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
-        .patient-card-mero { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.8); border-radius: 14px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s; }
-        .patient-card-mero:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
-        .badge-success { background: rgba(5, 150, 105, 0.15); color: #059669; border: 1px solid rgba(5, 150, 105, 0.2); }
-        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); }
-        .mero-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; font-family: 'Tajawal', sans-serif; }
-        .mero-btn-primary { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2); }
-        .mero-btn-secondary { background: rgba(255, 255, 255, 0.8); color: #1e293b; border: 1px solid rgba(203,213,225,0.5); }
-        .mero-btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; }
-        .mero-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.8); padding: 8px 12px; padding-bottom: max(8px, env(safe-area-inset-bottom)); display: none; }
-        .mero-nav.active { display: flex; justify-content: space-around; }
-        .method-slider { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-        .method-option { background: rgba(255,255,255,0.6); border: 2px solid rgba(203, 213, 225, 0.5); border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s; text-align: center; font-weight: 600; color: #475569; }
-        .method-option.active { border-color: #4f46e5; background: rgba(79, 70, 229, 0.05); color: #4f46e5; }
-        .spinner { width: 20px; height: 20px; border: 2px solid transparent; border-top-color: currentColor; border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.4));
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 
+                4px 4px 12px rgba(0, 0, 0, 0.3),
+                -2px -2px 8px rgba(255, 255, 255, 0.02);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-box h4 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-box p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .patient-card-mero {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.3));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                4px 4px 10px rgba(0, 0, 0, 0.2),
+                -2px -2px 6px rgba(255, 255, 255, 0.02);
+        }
+
+        .patient-card-mero:hover {
+            transform: translateX(-4px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 
+                6px 6px 16px rgba(0, 0, 0, 0.3),
+                -3px -3px 8px rgba(255, 255, 255, 0.03);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success {
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-warning {
+            background: linear-gradient(145deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .mero-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .mero-btn-primary {
+            background: linear-gradient(145deg, #6366f1, #4f46e5);
+            color: white;
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+        }
+
+        .mero-btn-secondary {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.4));
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mero-btn-success {
+            background: linear-gradient(145deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        .mero-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0; right: 0;
+            z-index: 90;
+            background: linear-gradient(145deg, #1e293b, #162032);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 16px;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            display: none;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .mero-nav.active {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .method-slider {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .method-option {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(30, 41, 59, 0.3));
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .method-option.active {
+            border-color: #6366f1;
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1));
+            color: #a5b4fc;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Header Switching */
+        /* Header Styles */
         .mero-header { display: none; }
         .mero-header.active { display: block; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 150; padding: 16px; }
-        .modal-overlay.active { display: flex; }
-        .modal { background: #ffffff; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 20px; width: 100%; max-width: 500px; animation: modalUp 0.4s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        @keyframes modalUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .back-btn {
-            width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.5);
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: all 0.3s; border: 1px solid rgba(255,255,255,0.3);
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 150;
+            padding: 20px;
         }
-        .back-btn:hover { background: rgba(255,255,255,0.8); }
 
-        @media (max-width: 768px) { .method-slider { grid-template-columns: 1fr; } }
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: linear-gradient(145deg, #1e293b, #162032);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 480px;
+            animation: modalUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 24px 48px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes modalUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.4));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 
+                4px 4px 10px rgba(0, 0, 0, 0.2),
+                -2px -2px 6px rgba(255, 255, 255, 0.02);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1));
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Section Title Animation */
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            border-radius: 2px;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            margin: 20px 0;
+        }
+
+        /* Install Prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 180;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .method-slider { grid-template-columns: 1fr; }
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-logo {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
     </style>
 </head>
 <body class="pb-24">
-    <!-- Background Orbs -->
-    <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo text-center">
+            <div class="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center" style="background: linear-gradient(145deg, #6366f1, #4f46e5);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M10.5 20.5H3.5a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-7"/>
+                    <path d="M8 7v7"/><path d="M12 7v7"/><path d="M17 7v7"/>
+                </svg>
+            </div>
+            <h1 class="text-xl font-bold" style="font-family: 'Outfit', sans-serif; color: var(--text-primary);">Drug Dispensing</h1>
+            <p class="text-sm mt-1" style="color: var(--text-muted);">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Animated Background -->
+    <div class="mesh-bg">
+        <div class="mesh-gradient"></div>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Install Prompt Container -->
+    <div id="installPromptContainer"></div>
+
     <!-- Main Header -->
     <header class="sticky top-0 z-50 px-4 py-4" id="mainHeader">
-        <div class="glass rounded-2xl px-5 py-4">
+        <div class="neu-card" style="padding: 18px 20px;">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M10.5 20.5H3.5a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-7"/><path d="M8 7v7"/><path d="M12 7v7"/><path d="M17 7v7"/></svg>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: linear-gradient(145deg, #6366f1, #4f46e5); box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M10.5 20.5H3.5a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-7"/>
+                            <path d="M8 7v7"/><path d="M12 7v7"/><path d="M17 7v7"/>
+                        </svg>
                     </div>
                     <div>
-                        <h1 class="text-lg font-bold text-slate-800" style="font-family: 'Space Grotesk', sans-serif;">Drug Dispensing</h1>
-                        <p class="text-xs text-slate-500">مستشفى بغداد التعليمي</p>
+                        <h1 class="text-lg font-bold" style="font-family: 'Outfit', sans-serif; color: var(--text-primary);">Drug Dispensing</h1>
+                        <p class="text-xs" style="color: var(--text-muted);">مستشفى بغداد التعليمي</p>
                     </div>
                 </div>
-                <div class="text-left">
-                    <p class="text-xs text-slate-500" id="currentDate"></p>
+                <div class="text-left flex items-center gap-3">
+                    <div id="onlineStatus" class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <p class="text-xs" style="color: var(--text-muted);" id="currentDate"></p>
                 </div>
             </div>
         </div>
@@ -217,15 +761,15 @@
 
     <!-- Meropenem Header -->
     <header class="mero-header sticky top-0 z-50 px-4 py-4" id="meroHeader">
-        <div class="glass rounded-2xl px-5 py-4">
+        <div class="neu-card" style="padding: 18px 20px;">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-4">
                     <button onclick="switchForm('ivig')" class="back-btn">
-                        <i class="fas fa-arrow-right text-slate-600"></i>
+                        <i class="fas fa-arrow-right" style="color: var(--text-secondary);"></i>
                     </button>
                     <div>
-                        <h1 class="text-lg font-bold text-slate-800" style="font-family: 'Space Grotesk', sans-serif;">Meropenem</h1>
-                        <p class="text-xs text-slate-500">Tracker Pro</p>
+                        <h1 class="text-lg font-bold" style="font-family: 'Outfit', sans-serif; color: var(--text-primary);">Meropenem</h1>
+                        <p class="text-xs" style="color: var(--text-muted);">Tracker Pro</p>
                     </div>
                 </div>
             </div>
@@ -237,179 +781,678 @@
         
         <!-- IVIG Form -->
         <section class="form-section active" id="ivigForm">
-            <div class="mb-5"><h2 class="text-2xl font-bold text-purple-700 mb-1">نموذج IVIG</h2><p class="text-sm text-slate-600">Immunoglobulin Therapy Record</p></div>
-            <div class="mero-card space-y-4">
-                <div class="grid grid-cols-2 gap-3"><div class="readonly-field text-center"><p class="text-xs text-slate-500 mb-1">الدائرة</p><p class="text-sm font-bold">دائرة مدينة الطب</p></div><div class="readonly-field text-center"><p class="text-xs text-slate-500 mb-1">المستشفى</p><p class="text-sm font-bold">مستشفى بغداد التعليمي</p></div></div>
-                <div class="h-px bg-slate-200"></div>
-                <div><label class="form-label">المؤسسة</label><select class="form-input" id="ivigInstitution"><option value="مستشفى بغداد التعليمي">مستشفى بغداد التعليمي</option></select></div>
-                <div><label class="form-label">الردهة</label><select class="form-input" id="ivigWard"><option value="">اختر الردهة</option><option value="الوحدة العصبية">الوحدة العصبية</option><option value="الوحدة الباطنية">الوحدة الباطنية</option><option value="الوحدة الجراحية">الوحدة الجراحية</option><option value="الوحدة النسائية">الوحدة النسائية</option><option value="وحدة العناية المركزه">وحدة العناية المركزه</option></select></div>
-                <div><label class="form-label required">الاسم الكامل</label><input type="text" class="form-input" id="ivigPatientName" placeholder="أدخل اسم المريض"></div>
-                <div><label class="form-label required">العمر بالسنوات</label><input type="number" class="form-input" id="ivigAge" placeholder="العمر" min="0" max="150"></div>
-                <div><label class="form-label required">التشخيص الطبي (بالإنجليزية)</label><input type="text" class="form-input" id="ivigDiagnosis" placeholder="Medical Diagnosis in English" dir="ltr"><p class="text-xs text-slate-500 mt-1">يُقبل الحروف الإنجليزية فقط</p></div>
-                <div><label class="form-label required">الجرعة بالغرام</label><input type="number" class="form-input" id="ivigDosage" placeholder="جرعة بالغرام" step="0.1" min="0"></div>
-                <div><label class="form-label">الاستجابة</label><select class="form-input" id="ivigResponse"><option value="">اختر الاستجابة</option><option value="مستجيب">مستجيب</option><option value="غير مستجيب">غير مستجيب</option></select></div>
-                <div><label class="form-label">اسم الصيدلي المسؤول</label><input type="text" class="form-input" id="ivigPharmacist" placeholder="اسم الصيدلي"></div>
-                <button type="button" class="btn-submit btn-ivig" onclick="submitForm('ivig')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg><span id="ivigBtnText">إرسال النموذج</span></button>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold section-title" style="color: #a855f7;">نموذج IVIG</h2>
+                <p class="text-sm mt-3" style="color: var(--text-muted);">Immunoglobulin Therapy Record</p>
+            </div>
+            <div class="neu-card space-y-5">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="readonly-field text-center">
+                        <p class="text-xs mb-1" style="color: var(--text-muted);">الدائرة</p>
+                        <p class="text-sm font-bold" style="color: var(--text-primary);">دائرة مدينة الطب</p>
+                    </div>
+                    <div class="readonly-field text-center">
+                        <p class="text-xs mb-1" style="color: var(--text-muted);">المستشفى</p>
+                        <p class="text-sm font-bold" style="color: var(--text-primary);">مستشفى بغداد التعليمي</p>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div>
+                    <label class="form-label">المؤسسة</label>
+                    <select class="form-input" id="ivigInstitution">
+                        <option value="مستشفى بغداد التعليمي">مستشفى بغداد التعليمي</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">الردهة</label>
+                    <select class="form-input" id="ivigWard">
+                        <option value="">اختر الردهة</option>
+                        <option value="الوحدة العصبية">الوحدة العصبية</option>
+                        <option value="الوحدة الباطنية">الوحدة الباطنية</option>
+                        <option value="الوحدة الجراحية">الوحدة الجراحية</option>
+                        <option value="الوحدة النسائية">الوحدة النسائية</option>
+                        <option value="وحدة العناية المركزه">وحدة العناية المركزه</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label required">الاسم الكامل</label>
+                    <input type="text" class="form-input" id="ivigPatientName" placeholder="أدخل اسم المريض">
+                </div>
+                <div>
+                    <label class="form-label required">العمر بالسنوات</label>
+                    <input type="number" class="form-input" id="ivigAge" placeholder="العمر" min="0" max="150">
+                </div>
+                <div>
+                    <label class="form-label required">التشخيص الطبي (بالإنجليزية)</label>
+                    <input type="text" class="form-input" id="ivigDiagnosis" placeholder="Medical Diagnosis in English" dir="ltr">
+                    <p class="text-xs mt-2" style="color: var(--text-muted);">يُقبل الحروف الإنجليزية فقط</p>
+                </div>
+                <div>
+                    <label class="form-label required">الجرعة بالغرام</label>
+                    <input type="number" class="form-input" id="ivigDosage" placeholder="جرعة بالغرام" step="0.1" min="0">
+                </div>
+                <div>
+                    <label class="form-label">الاستجابة</label>
+                    <select class="form-input" id="ivigResponse">
+                        <option value="">اختر الاستجابة</option>
+                        <option value="مستجيب">مستجيب</option>
+                        <option value="غير مستجيب">غير مستجيب</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">اسم الصيدلي المسؤول</label>
+                    <input type="text" class="form-input" id="ivigPharmacist" placeholder="اسم الصيدلي">
+                </div>
+                <button type="button" class="btn-submit btn-ivig" onclick="submitForm('ivig')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                    </svg>
+                    <span id="ivigBtnText">إرسال النموذج</span>
+                </button>
             </div>
         </section>
 
         <!-- Albumin Form -->
         <section class="form-section" id="albuminForm">
-            <div class="mb-5"><h2 class="text-2xl font-bold text-cyan-700 mb-1">نموذج الألبومين</h2><p class="text-sm text-slate-600">Albumin Dispensing Record</p></div>
-            <div class="mero-card space-y-4">
-                <div class="grid grid-cols-2 gap-3"><div class="readonly-field text-center"><p class="text-xs text-slate-500 mb-1">الدائرة</p><p class="text-sm font-bold">دائرة مدينة الطب</p></div><div class="readonly-field text-center"><p class="text-xs text-slate-500 mb-1">المستشفى</p><p class="text-sm font-bold">مستشفى بغداد التعليمي</p></div></div>
-                <div class="h-px bg-slate-200"></div>
-                <div><label class="form-label required">اسم المريض</label><input type="text" class="form-input" id="albuminPatientName" placeholder="أدخل اسم المريض"></div>
-                <div><label class="form-label required">رقم الملف</label><input type="text" class="form-input" id="albuminFileNumber" placeholder="رقم الملف"></div>
-                <div><label class="form-label required">التاريخ</label><input type="date" class="form-input" id="albuminDate" dir="ltr"></div>
-                <div><label class="form-label required">الطابق</label><select class="form-input" id="albuminFloor"><option value="">اختر الطابق</option><option value="عناية">عناية</option><option value="ديلزه">ديلزه</option><option value="الثاني">الثاني</option><option value="الثالث">الثالث</option><option value="الرابع">الرابع</option><option value="الخامس">الخامس</option><option value="السادس">السادس</option><option value="الثامن">الثامن</option><option value="التاسع">التاسع</option><option value="العاشر">العاشر</option></select></div>
-                <div><label class="form-label required">التشخيص</label><select class="form-input" id="albuminDiagnosis" dir="ltr"><option value="">Select Diagnosis</option><option value="Hypoalbuminemia">Hypoalbuminemia</option><option value="Liver Cirrhosis">Liver Cirrhosis</option><option value="Nephrotic Syndrome">Nephrotic Syndrome</option><option value="Sepsis">Sepsis</option><option value="Burns">Burns</option><option value="Other">Other</option></select></div>
-                <div><label class="form-label required">العدد</label><input type="number" class="form-input" id="albuminQuantity" placeholder="أدخل العدد" min="1"></div>
-                <button type="button" class="btn-submit btn-albumin" onclick="submitForm('albumin')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg><span id="albuminBtnText">إرسال النموذج</span></button>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold section-title" style="color: #06b6d4;">نموذج الألبومين</h2>
+                <p class="text-sm mt-3" style="color: var(--text-muted);">Albumin Dispensing Record</p>
+            </div>
+            <div class="neu-card space-y-5">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="readonly-field text-center">
+                        <p class="text-xs mb-1" style="color: var(--text-muted);">الدائرة</p>
+                        <p class="text-sm font-bold" style="color: var(--text-primary);">دائرة مدينة الطب</p>
+                    </div>
+                    <div class="readonly-field text-center">
+                        <p class="text-xs mb-1" style="color: var(--text-muted);">المستشفى</p>
+                        <p class="text-sm font-bold" style="color: var(--text-primary);">مستشفى بغداد التعليمي</p>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div>
+                    <label class="form-label required">اسم المريض</label>
+                    <input type="text" class="form-input" id="albuminPatientName" placeholder="أدخل اسم المريض">
+                </div>
+                <div>
+                    <label class="form-label required">رقم الملف</label>
+                    <input type="text" class="form-input" id="albuminFileNumber" placeholder="رقم الملف">
+                </div>
+                <div>
+                    <label class="form-label required">التاريخ</label>
+                    <input type="date" class="form-input" id="albuminDate" dir="ltr">
+                </div>
+                <div>
+                    <label class="form-label required">الطابق</label>
+                    <select class="form-input" id="albuminFloor">
+                        <option value="">اختر الطابق</option>
+                        <option value="عناية">عناية</option>
+                        <option value="ديلزه">ديلزه</option>
+                        <option value="الثاني">الثاني</option>
+                        <option value="الثالث">الثالث</option>
+                        <option value="الرابع">الرابع</option>
+                        <option value="الخامس">الخامس</option>
+                        <option value="السادس">السادس</option>
+                        <option value="الثامن">الثامن</option>
+                        <option value="التاسع">التاسع</option>
+                        <option value="العاشر">العاشر</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label required">التشخيص</label>
+                    <select class="form-input" id="albuminDiagnosis" dir="ltr">
+                        <option value="">Select Diagnosis</option>
+                        <option value="Hypoalbuminemia">Hypoalbuminemia</option>
+                        <option value="Liver Cirrhosis">Liver Cirrhosis</option>
+                        <option value="Nephrotic Syndrome">Nephrotic Syndrome</option>
+                        <option value="Sepsis">Sepsis</option>
+                        <option value="Burns">Burns</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label required">العدد</label>
+                    <input type="number" class="form-input" id="albuminQuantity" placeholder="أدخل العدد" min="1">
+                </div>
+                <button type="button" class="btn-submit btn-albumin" onclick="submitForm('albumin')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                    </svg>
+                    <span id="albuminBtnText">إرسال النموذج</span>
+                </button>
             </div>
         </section>
 
         <!-- Tigecycline Form -->
         <section class="form-section" id="tigecyclineForm">
-            <div class="mb-5"><h2 class="text-2xl font-bold text-pink-700 mb-1">نموذج التايغيسايكلين</h2><p class="text-sm text-slate-600">Tigecycline Therapy Record</p></div>
-            <div class="mero-card space-y-4">
-                <div><label class="form-label required">اسم المريض</label><input type="text" class="form-input" id="tigecyclinePatientName" placeholder="أدخل اسم المريض"></div>
-                <div><label class="form-label required">العمر</label><input type="number" class="form-input" id="tigecyclineAge" placeholder="العمر" min="0" max="150"></div>
-                <div><label class="form-label required">الجنس</label><select class="form-input" id="tigecyclineGender"><option value="">اختر الجنس</option><option value="ذكر">ذكر</option><option value="انثى">انثى</option></select></div>
-                <div><label class="form-label required">التشخيص</label><input type="text" class="form-input" id="tigecyclineDiagnosis" placeholder="أدخل التشخيص"></div>
-                <div><label class="form-label required">الجرعة</label><input type="text" class="form-input" id="tigecyclineDosage" placeholder="مثال: 50 x2"></div>
-                <div><label class="form-label required">اسم الصيدلي</label><input type="text" class="form-input" id="tigecyclinePharmacist" placeholder="أدخل اسم الصيدلي"></div>
-                <button type="button" class="btn-submit btn-tigecycline" onclick="submitForm('tigecycline')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg><span id="tigecyclineBtnText">إرسال النموذج</span></button>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold section-title" style="color: #ec4899;">نموذج التايغيسايكلين</h2>
+                <p class="text-sm mt-3" style="color: var(--text-muted);">Tigecycline Therapy Record</p>
+            </div>
+            <div class="neu-card space-y-5">
+                <div>
+                    <label class="form-label required">اسم المريض</label>
+                    <input type="text" class="form-input" id="tigecyclinePatientName" placeholder="أدخل اسم المريض">
+                </div>
+                <div>
+                    <label class="form-label required">العمر</label>
+                    <input type="number" class="form-input" id="tigecyclineAge" placeholder="العمر" min="0" max="150">
+                </div>
+                <div>
+                    <label class="form-label required">الجنس</label>
+                    <select class="form-input" id="tigecyclineGender">
+                        <option value="">اختر الجنس</option>
+                        <option value="ذكر">ذكر</option>
+                        <option value="انثى">انثى</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label required">التشخيص</label>
+                    <input type="text" class="form-input" id="tigecyclineDiagnosis" placeholder="أدخل التشخيص">
+                </div>
+                <div>
+                    <label class="form-label required">الجرعة</label>
+                    <input type="text" class="form-input" id="tigecyclineDosage" placeholder="مثال: 50 x2">
+                </div>
+                <div>
+                    <label class="form-label required">اسم الصيدلي</label>
+                    <input type="text" class="form-input" id="tigecyclinePharmacist" placeholder="أدخل اسم الصيدلي">
+                </div>
+                <button type="button" class="btn-submit btn-tigecycline" onclick="submitForm('tigecycline')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                    </svg>
+                    <span id="tigecyclineBtnText">إرسال النموذج</span>
+                </button>
             </div>
         </section>
 
         <!-- Colistin Form -->
         <section class="form-section" id="colistinForm">
-            <div class="mb-5"><h2 class="text-2xl font-bold text-emerald-700 mb-1">نموذج الكوليستين</h2><p class="text-sm text-slate-600">Colistin Therapy Record</p></div>
-            <div class="mero-card space-y-4">
-                <div class="readonly-field text-center"><p class="text-xs text-slate-500 mb-1">اسم المؤسسة</p><p class="text-sm font-bold">دائرة مدينة الطب - مستشفى بغداد التعليمي</p></div>
-                <div class="h-px bg-slate-200"></div>
-                <div><label class="form-label required">اسم المريض</label><input type="text" class="form-input" id="colistinPatientName" placeholder="أدخل اسم المريض"></div>
-                <div><label class="form-label required">العمر</label><input type="number" class="form-input" id="colistinAge" placeholder="العمر" min="0" max="150"></div>
-                <div><label class="form-label required">الجنس</label><select class="form-input" id="colistinGender"><option value="">اختر الجنس</option><option value="ذكر">ذكر</option><option value="انثى">انثى</option></select></div>
-                <div><label class="form-label required">تاريخ بدء العلاج</label><input type="date" class="form-input" id="colistinStartDate" dir="ltr"></div>
-                <div><label class="form-label required">الجرعة</label><input type="text" class="form-input" id="colistinDosage" placeholder="مثال: 2 x 350000"></div>
-                <div><label class="form-label required">اسم الصيدلي</label><input type="text" class="form-input" id="colistinPharmacist" placeholder="أدخل اسم الصيدلي"></div>
-                <button type="button" class="btn-submit btn-colistin" onclick="submitForm('colistin')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg><span id="colistinBtnText">إرسال النموذج</span></button>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold section-title" style="color: #10b981;">نموذج الكوليستين</h2>
+                <p class="text-sm mt-3" style="color: var(--text-muted);">Colistin Therapy Record</p>
+            </div>
+            <div class="neu-card space-y-5">
+                <div class="readonly-field text-center">
+                    <p class="text-xs mb-1" style="color: var(--text-muted);">اسم المؤسسة</p>
+                    <p class="text-sm font-bold" style="color: var(--text-primary);">دائرة مدينة الطب - مستشفى بغداد التعليمي</p>
+                </div>
+                <div class="divider"></div>
+                <div>
+                    <label class="form-label required">اسم المريض</label>
+                    <input type="text" class="form-input" id="colistinPatientName" placeholder="أدخل اسم المريض">
+                </div>
+                <div>
+                    <label class="form-label required">العمر</label>
+                    <input type="number" class="form-input" id="colistinAge" placeholder="العمر" min="0" max="150">
+                </div>
+                <div>
+                    <label class="form-label required">الجنس</label>
+                    <select class="form-input" id="colistinGender">
+                        <option value="">اختر الجنس</option>
+                        <option value="ذكر">ذكر</option>
+                        <option value="انثى">انثى</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label required">تاريخ بدء العلاج</label>
+                    <input type="date" class="form-input" id="colistinStartDate" dir="ltr">
+                </div>
+                <div>
+                    <label class="form-label required">الجرعة</label>
+                    <input type="text" class="form-input" id="colistinDosage" placeholder="مثال: 2 x 350000">
+                </div>
+                <div>
+                    <label class="form-label required">اسم الصيدلي</label>
+                    <input type="text" class="form-input" id="colistinPharmacist" placeholder="أدخل اسم الصيدلي">
+                </div>
+                <button type="button" class="btn-submit btn-colistin" onclick="submitForm('colistin')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                    </svg>
+                    <span id="colistinBtnText">إرسال النموذج</span>
+                </button>
             </div>
         </section>
 
-        <!-- MEROPENEM SECTION -->
+        <!-- MEROPENEM SECTION (AT THE END) -->
         <section class="form-section" id="meropenemForm">
             <div class="mero-container">
                 <div id="meroDashboard" class="mero-page active">
                     <div class="stat-grid">
-                        <div class="stat-box"><h4 id="meroTotalPts">0</h4><p>Total Patients</p></div>
-                        <div class="stat-box"><h4 id="meroAdmitted">0</h4><p>Admitted</p></div>
-                        <div class="stat-box"><h4 id="meroDischarged">0</h4><p>Discharged</p></div>
-                        <div class="stat-box"><h4 id="meroVials">0</h4><p>Total (g)</p></div>
-                    </div>
-                    <div class="mero-card">
-                        <div class="flex items-center justify-between mb-3"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-bolt text-indigo-500"></i> Actions</h3></div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button class="mero-btn mero-btn-primary w-full" onclick="meroShowPage('meroNewPatient')"><i class="fas fa-plus"></i> New Patient</button>
-                            <button class="mero-btn mero-btn-secondary w-full" onclick="meroShowPage('meroPatientList')"><i class="fas fa-list"></i> View All</button>
+                        <div class="stat-box">
+                            <h4 id="meroTotalPts">0</h4>
+                            <p>Total Patients</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4 id="meroAdmitted">0</h4>
+                            <p>Admitted</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4 id="meroDischarged">0</h4>
+                            <p>Discharged</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4 id="meroVials">0</h4>
+                            <p>Total (g)</p>
                         </div>
                     </div>
-                    <div class="mero-card">
-                        <div class="flex items-center justify-between mb-3"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-clock text-indigo-500"></i> Recent</h3></div>
+                    <div class="neu-card mb-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold flex items-center gap-3" style="color: var(--text-primary);">
+                                <i class="fas fa-bolt" style="color: #6366f1;"></i> Actions
+                            </h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="mero-btn mero-btn-primary w-full" onclick="meroShowPage('meroNewPatient')">
+                                <i class="fas fa-plus"></i> New Patient
+                            </button>
+                            <button class="mero-btn mero-btn-secondary w-full" onclick="meroShowPage('meroPatientList')">
+                                <i class="fas fa-list"></i> View All
+                            </button>
+                        </div>
+                    </div>
+                    <div class="neu-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold flex items-center gap-3" style="color: var(--text-primary);">
+                                <i class="fas fa-clock" style="color: #6366f1;"></i> Recent
+                            </h3>
+                        </div>
                         <div id="meroRecentList"></div>
                     </div>
                 </div>
 
                 <div id="meroNewPatient" class="mero-page">
-                    <div class="mero-card">
-                        <h3 class="font-bold text-lg mb-4 text-indigo-700"><i class="fas fa-user-plus"></i> Admit New Patient</h3>
+                    <div class="neu-card">
+                        <h3 class="font-bold text-lg mb-5" style="color: #6366f1;">
+                            <i class="fas fa-user-plus"></i> Admit New Patient
+                        </h3>
                         <form id="meroNewPatientForm" onsubmit="event.preventDefault(); meroSubmitPatient();">
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div><label class="form-label required">Patient Name</label><input type="text" id="meroPName" class="form-input" required placeholder="Full Name"></div>
-                                <div><label class="form-label required">Age</label><input type="number" id="meroPAge" class="form-input" required min="0" placeholder="Years"></div>
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="form-label required">Patient Name</label>
+                                    <input type="text" id="meroPName" class="form-input" required placeholder="Full Name">
+                                </div>
+                                <div>
+                                    <label class="form-label required">Age</label>
+                                    <input type="number" id="meroPAge" class="form-input" required min="0" placeholder="Years">
+                                </div>
                             </div>
-                            <div class="mb-3"><label class="form-label required">Gender</label><select id="meroPGender" class="form-input" required><option value="">Select</option><option value="ذكر">Male</option><option value="انثى">Female</option></select></div>
-                            <div class="mb-3"><label class="form-label required">Diagnosis</label><select id="meroPDiagnosis" class="form-input" required><option value="">Select</option><option value="Sepsis">Sepsis</option><option value="HAP">HAP</option><option value="Meningitis">Meningitis</option><option value="Other">Other</option></select></div>
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div><label class="form-label required">Dosing</label><select id="meroPDose" class="form-input" required><option value="">Select</option><option value="1000 mg">1000 mg</option><option value="500 mg">500 mg</option></select></div>
-                                <div><label class="form-label required">Freq (hrs)</label><select id="meroPFreq" class="form-input" required><option value="">Select</option><option value="8">8</option><option value="12">12</option><option value="24">24</option></select></div>
+                            <div class="mb-4">
+                                <label class="form-label required">Gender</label>
+                                <select id="meroPGender" class="form-input" required>
+                                    <option value="">Select</option>
+                                    <option value="ذكر">Male</option>
+                                    <option value="انثى">Female</option>
+                                </select>
                             </div>
-                            <div class="mb-3"><label class="form-label required" style="color: #dc2626;">Sensitivity Test</label><select id="meroPSens" class="form-input" required><option value="">Select</option><option value="Yes">Yes</option><option value="No">No</option></select></div>
-                            <hr class="border-slate-200 my-4">
-                            <h4 class="font-bold mb-3 text-slate-700"><i class="fas fa-pills"></i> Initial Dispensing</h4>
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div><label class="form-label required">1g Vials</label><input type="number" id="meroV1g" class="form-input" min="0" placeholder="0" oninput="meroCalcTotal()"></div>
-                                <div><label class="form-label required">0.5g Vials</label><input type="number" id="meroV05g" class="form-input" min="0" placeholder="0" oninput="meroCalcTotal()"></div>
+                            <div class="mb-4">
+                                <label class="form-label required">Diagnosis</label>
+                                <select id="meroPDiagnosis" class="form-input" required>
+                                    <option value="">Select</option>
+                                    <option value="Sepsis">Sepsis</option>
+                                    <option value="HAP">HAP</option>
+                                    <option value="Meningitis">Meningitis</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </div>
-                            <div class="mero-card bg-indigo-50 border-indigo-200 mb-4">
-                                <div class="text-center"><p class="text-xs text-slate-500 mb-1">Total Amount</p><h2 id="meroNewTotal" class="text-3xl font-bold text-indigo-700">0 g</h2></div>
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="form-label required">Dosing</label>
+                                    <select id="meroPDose" class="form-input" required>
+                                        <option value="">Select</option>
+                                        <option value="1000 mg">1000 mg</option>
+                                        <option value="500 mg">500 mg</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label required">Freq (hrs)</label>
+                                    <select id="meroPFreq" class="form-input" required>
+                                        <option value="">Select</option>
+                                        <option value="8">8</option>
+                                        <option value="12">12</option>
+                                        <option value="24">24</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="mb-4"><label class="form-label required">Pharmacist ID</label><input type="text" id="meroPPharm" class="form-input" required placeholder="ID"></div>
-                            <button type="submit" id="meroSubmitBtn" class="mero-btn mero-btn-primary w-full text-lg py-4"><i class="fas fa-save"></i> Admit Patient</button>
+                            <div class="mb-4">
+                                <label class="form-label required" style="color: #f43f5e;">Sensitivity Test</label>
+                                <select id="meroPSens" class="form-input" required>
+                                    <option value="">Select</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="divider"></div>
+                            <h4 class="font-bold mb-4" style="color: var(--text-primary);">
+                                <i class="fas fa-pills"></i> Initial Dispensing
+                            </h4>
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="form-label required">1g Vials</label>
+                                    <input type="number" id="meroV1g" class="form-input" min="0" placeholder="0" oninput="meroCalcTotal()">
+                                </div>
+                                <div>
+                                    <label class="form-label required">0.5g Vials</label>
+                                    <input type="number" id="meroV05g" class="form-input" min="0" placeholder="0" oninput="meroCalcTotal()">
+                                </div>
+                            </div>
+                            <div class="neu-card-inset mb-5" style="background: linear-gradient(145deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));">
+                                <div class="text-center">
+                                    <p class="text-xs mb-1" style="color: var(--text-muted);">Total Amount</p>
+                                    <h2 id="meroNewTotal" class="text-3xl font-bold" style="color: #818cf8;">0 g</h2>
+                                </div>
+                            </div>
+                            <div class="mb-5">
+                                <label class="form-label required">Pharmacist ID</label>
+                                <input type="text" id="meroPPharm" class="form-input" required placeholder="ID">
+                            </div>
+                            <button type="submit" id="meroSubmitBtn" class="mero-btn mero-btn-primary w-full text-lg py-4">
+                                <i class="fas fa-save"></i> Admit Patient
+                            </button>
                         </form>
                     </div>
                 </div>
 
                 <div id="meroPatientList" class="mero-page">
-                     <div class="mb-4 relative"><input type="text" id="meroSearch" class="form-input pl-10" placeholder="Search patients..." oninput="meroFilter()"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i></div>
-                     <div id="meroPatientListContainer"></div>
+                    <div class="mb-5 relative">
+                        <input type="text" id="meroSearch" class="form-input" style="padding-right: 44px;" placeholder="Search patients..." oninput="meroFilter()">
+                        <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+                    </div>
+                    <div id="meroPatientListContainer"></div>
                 </div>
-                <div id="meroPatientDetail" class="mero-page"><button class="mero-btn mero-btn-secondary mb-4" onclick="meroShowPage('meroPatientList')"><i class="fas fa-arrow-right"></i> Back to List</button><div id="meroDetailContent"></div></div>
+
+                <div id="meroPatientDetail" class="mero-page">
+                    <button class="mero-btn mero-btn-secondary mb-5" onclick="meroShowPage('meroPatientList')">
+                        <i class="fas fa-arrow-right"></i> Back to List
+                    </button>
+                    <div id="meroDetailContent"></div>
+                </div>
+
                 <div id="meroEGFR" class="mero-page">
-                     <div class="mero-card">
-                        <h3 class="font-bold text-lg mb-4 text-indigo-700"><i class="fas fa-kidneys"></i> eGFR Calculator</h3>
-                        <div class="mb-4"><label class="form-label">Method</label><div class="method-slider"><div class="method-option active" onclick="setMeroMethod('ckdepi')">CKD-EPI</div><div class="method-option" onclick="setMeroMethod('mdrd')">MDRD</div><div class="method-option" onclick="setMeroMethod('cg')">C-G</div></div><input type="hidden" id="meroMethod" value="ckdepi"></div>
-                        <div class="grid grid-cols-2 gap-3 mb-3"><div><label class="form-label required">Creatinine (mg/dL)</label><input type="number" id="meroScr" class="form-input" step="0.01" placeholder="1.0"></div><div><label class="form-label required">Age</label><input type="number" id="meroAgeCalc" class="form-input" placeholder="50"></div></div>
-                        <div class="mb-3"><label class="form-label required">Gender</label><select id="meroGenderCalc" class="form-input"><option value="male">Male</option><option value="female">Female</option></select></div>
-                        <div class="mb-3" id="meroWeightDiv" style="display:none;"><label class="form-label required">Weight (kg)</label><input type="number" id="meroWtCalc" class="form-input" placeholder="70"></div>
-                        <button class="mero-btn mero-btn-primary w-full" onclick="meroCalcEGFR()"><i class="fas fa-calculator"></i> Calculate</button>
-                        <div id="meroEGFRResult" class="mt-4 text-center hidden"><p class="text-slate-500 text-sm">Result</p><h1 id="meroEGFRVal" class="text-5xl font-black text-slate-800 my-2">--</h1><p class="text-slate-500 text-sm">mL/min/1.73m²</p><p id="meroEGFRStage" class="mt-2 text-sm font-bold"></p></div>
+                    <div class="neu-card">
+                        <h3 class="font-bold text-lg mb-5" style="color: #6366f1;">
+                            <i class="fas fa-kidneys"></i> eGFR Calculator
+                        </h3>
+                        <div class="mb-5">
+                            <label class="form-label">Method</label>
+                            <div class="method-slider">
+                                <div class="method-option active" onclick="setMeroMethod('ckdepi')">CKD-EPI</div>
+                                <div class="method-option" onclick="setMeroMethod('mdrd')">MDRD</div>
+                                <div class="method-option" onclick="setMeroMethod('cg')">C-G</div>
+                            </div>
+                            <input type="hidden" id="meroMethod" value="ckdepi">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="form-label required">Creatinine (mg/dL)</label>
+                                <input type="number" id="meroScr" class="form-input" step="0.01" placeholder="1.0">
+                            </div>
+                            <div>
+                                <label class="form-label required">Age</label>
+                                <input type="number" id="meroAgeCalc" class="form-input" placeholder="50">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label required">Gender</label>
+                            <select id="meroGenderCalc" class="form-input">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="mb-4" id="meroWeightDiv" style="display:none;">
+                            <label class="form-label required">Weight (kg)</label>
+                            <input type="number" id="meroWtCalc" class="form-input" placeholder="70">
+                        </div>
+                        <button class="mero-btn mero-btn-primary w-full" onclick="meroCalcEGFR()">
+                            <i class="fas fa-calculator"></i> Calculate
+                        </button>
+                        <div id="meroEGFRResult" class="mt-5 text-center hidden">
+                            <p class="text-sm" style="color: var(--text-muted);">Result</p>
+                            <h1 id="meroEGFRVal" class="text-5xl font-black my-3" style="color: var(--text-primary);">--</h1>
+                            <p class="text-sm" style="color: var(--text-muted);">mL/min/1.73m²</p>
+                            <p id="meroEGFRStage" class="mt-3 text-sm font-bold"></p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <footer class="mt-8 text-center" id="mainFooter"><p class="text-xs text-slate-500">made by Luay</p></footer>
+        <footer class="mt-10 text-center" id="mainFooter">
+            <p class="text-xs" style="color: var(--text-muted);">made by Luay</p>
+        </footer>
     </main>
 
     <!-- Main Bottom Navigation -->
     <nav class="bottom-nav" id="mainNav">
-        <div class="glass rounded-2xl flex gap-1 p-2 max-w-lg mx-auto shadow-lg">
-            <button class="nav-item ivig active" onclick="switchForm('ivig')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span>IVIG</span></button>
-            <button class="nav-item meropenem" onclick="switchForm('meropenem')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span>Meropenem</span></button>
-            <button class="nav-item albumin" onclick="switchForm('albumin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/></svg><span>ألبومين</span></button>
-            <button class="nav-item tigecycline" onclick="switchForm('tigecycline')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 20.5H3.5a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-7"/><path d="M8 7v7M12 7v7M17 7v7"/></svg><span>تايغيسايكلين</span></button>
-            <button class="nav-item colistin" onclick="switchForm('colistin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg><span>كوليستين</span></button>
+        <div class="nav-container flex gap-1 max-w-lg mx-auto">
+            <button class="nav-item ivig active" onclick="switchForm('ivig')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                </svg>
+                <span>IVIG</span>
+            </button>
+            <button class="nav-item albumin" onclick="switchForm('albumin')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/>
+                </svg>
+                <span>ألبومين</span>
+            </button>
+            <button class="nav-item tigecycline" onclick="switchForm('tigecycline')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.5 20.5H3.5a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-7"/>
+                    <path d="M8 7v7M12 7v7M17 7v7"/>
+                </svg>
+                <span>تايغيسايكلين</span>
+            </button>
+            <button class="nav-item colistin" onclick="switchForm('colistin')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                    <path d="m3.3 7 8.7 5 8.7-5M12 22V12"/>
+                </svg>
+                <span>كوليستين</span>
+            </button>
+            <button class="nav-item meropenem" onclick="switchForm('meropenem')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>Meropenem</span>
+            </button>
         </div>
     </nav>
 
     <!-- Meropenem Bottom Navigation -->
     <nav class="mero-nav" id="meroNav">
-        <button class="nav-item active" onclick="meroShowPage('meroDashboard')"><i class="fas fa-th-large"></i><span class="text-xs mt-1">Home</span></button>
-        <button class="nav-item" onclick="meroShowPage('meroPatientList')"><i class="fas fa-users"></i><span class="text-xs mt-1">Patients</span></button>
-        <button class="nav-item" onclick="meroShowPage('meroNewPatient')"><i class="fas fa-plus-circle"></i><span class="text-xs mt-1">New</span></button>
-        <button class="nav-item" onclick="meroShowPage('meroEGFR')"><i class="fas fa-kidneys"></i><span class="text-xs mt-1">eGFR</span></button>
+        <button class="nav-item active" onclick="meroShowPage('meroDashboard')">
+            <i class="fas fa-th-large"></i>
+            <span class="text-xs mt-1">Home</span>
+        </button>
+        <button class="nav-item" onclick="meroShowPage('meroPatientList')">
+            <i class="fas fa-users"></i>
+            <span class="text-xs mt-1">Patients</span>
+        </button>
+        <button class="nav-item" onclick="meroShowPage('meroNewPatient')">
+            <i class="fas fa-plus-circle"></i>
+            <span class="text-xs mt-1">New</span>
+        </button>
+        <button class="nav-item" onclick="meroShowPage('meroEGFR')">
+            <i class="fas fa-kidneys"></i>
+            <span class="text-xs mt-1">eGFR</span>
+        </button>
     </nav>
 
     <!-- Modal -->
-    <div id="meroModal" class="modal-overlay"><div class="modal"><div class="p-5 border-b border-slate-100 flex justify-between items-center"><h3 class="font-bold text-lg text-slate-800">Daily Update</h3><button onclick="closeMeroModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button></div><div class="p-5"><input type="hidden" id="meroUpdateId"><p class="mb-4 text-center text-slate-600">Day <span id="meroUpdateDay" class="font-bold text-indigo-600">1</span> for <span id="meroUpdateName" class="font-bold text-slate-800"></span></p><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="form-label">1g Vials</label><input type="number" id="meroUpV1g" class="form-input" min="0" placeholder="0"></div><div><label class="form-label">0.5g Vials</label><input type="number" id="meroUpV05g" class="form-input" min="0" placeholder="0"></div></div><div class="mero-card bg-indigo-50 border-indigo-200 mb-4"><div class="text-center"><p class="text-xs text-slate-500">New Total After Update</p><h2 id="meroUpTotal" class="text-2xl font-bold text-indigo-700">0 g</h2></div></div><div class="flex gap-3"><button onclick="closeMeroModal()" class="mero-btn mero-btn-secondary flex-1">Cancel</button><button onclick="saveMeroUpdate()" class="mero-btn mero-btn-primary flex-1">Save</button></div></div></div></div>
+    <div id="meroModal" class="modal-overlay">
+        <div class="modal">
+            <div class="p-5 border-b flex justify-between items-center" style="border-color: rgba(255,255,255,0.05);">
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">Daily Update</h3>
+                <button onclick="closeMeroModal()" style="color: var(--text-muted);">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-5">
+                <input type="hidden" id="meroUpdateId">
+                <p class="mb-5 text-center" style="color: var(--text-secondary);">
+                    Day <span id="meroUpdateDay" class="font-bold" style="color: #6366f1;">1</span> for 
+                    <span id="meroUpdateName" class="font-bold" style="color: var(--text-primary);"></span>
+                </p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="form-label">1g Vials</label>
+                        <input type="number" id="meroUpV1g" class="form-input" min="0" placeholder="0">
+                    </div>
+                    <div>
+                        <label class="form-label">0.5g Vials</label>
+                        <input type="number" id="meroUpV05g" class="form-input" min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="neu-card-inset mb-5" style="background: linear-gradient(145deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));">
+                    <div class="text-center">
+                        <p class="text-xs" style="color: var(--text-muted);">New Total After Update</p>
+                        <h2 id="meroUpTotal" class="text-2xl font-bold" style="color: #818cf8;">0 g</h2>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="closeMeroModal()" class="mero-btn mero-btn-secondary flex-1">Cancel</button>
+                    <button onclick="saveMeroUpdate()" class="mero-btn mero-btn-primary flex-1">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ==========================================
         // CONFIGURATION
         // ==========================================
-        const MAIN_GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdiOeTz8rHLiohu9gpyxTunbRDpWlOUehSRiBOUZTNhz9XWbH21JV8s6HtQ1xKSixnOw/exec'; // IVIG, Albumin, etc.
-        const MERO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwI12_KSHQ95cew4Q6f9W9je2_lCSgifqxDFayupc7deCypjUrZN6ROL66GzIB_elJH/exec'; // Meropenem Only
+        const MAIN_GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdiOeTz8rHLiohu9gpyxTunbRDpWlOUehSRiBOUZTNhz9XWbH21JV8s6HtQ1xKSixnOw/exec';
+        const MERO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwI12_KSHQ95cew4Q6f9W9je2_lCSgifqxDFayupc7deCypjUrZN6ROL66GzIB_elJH/exec';
 
         let currentForm = 'ivig';
         let isSubmitting = false;
+        let deferredPrompt = null;
+
+        // ==========================================
+        // PWA SERVICE WORKER REGISTRATION
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('SW registered:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showToast('Update available! Refresh to update.', 'success');
+                                }
+                            });
+                        });
+                    })
+                    .catch((err) => console.log('SW registration failed:', err));
+            });
+        }
+
+        // ==========================================
+        // PWA INSTALL PROMPT
+        // ==========================================
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallPrompt();
+        });
+
+        function showInstallPrompt() {
+            const container = document.getElementById('installPromptContainer');
+            if (!container || !deferredPrompt) return;
+            
+            container.innerHTML = `
+                <div class="install-prompt neu-card" style="padding: 16px 20px;">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1">
+                            <p class="font-bold text-sm" style="color: var(--text-primary);">Install App</p>
+                            <p class="text-xs" style="color: var(--text-muted);">Add to home screen</p>
+                        </div>
+                        <button onclick="installPWA()" class="mero-btn mero-btn-primary" style="padding: 10px 16px;">
+                            Install
+                        </button>
+                        <button onclick="dismissInstall()" class="text-slate-500 hover:text-slate-300">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function installPWA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                showToast('App installed successfully!', 'success');
+            }
+            deferredPrompt = null;
+            dismissInstall();
+        }
+
+        function dismissInstall() {
+            const container = document.getElementById('installPromptContainer');
+            if (container) container.innerHTML = '';
+        }
+
+        // ==========================================
+        // ONLINE/OFFLINE STATUS
+        // ==========================================
+        function updateOnlineStatus() {
+            const statusEl = document.getElementById('onlineStatus');
+            if (navigator.onLine) {
+                statusEl.className = 'w-2 h-2 rounded-full bg-emerald-500';
+            } else {
+                statusEl.className = 'w-2 h-2 rounded-full bg-rose-500';
+                showToast('You are offline. Data will sync when online.', 'error');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // ==========================================
+        // PARTICLES
+        // ==========================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // ==========================================
+        // SPLASH SCREEN
+        // ==========================================
+        function hideSplash() {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                if (splash) splash.classList.add('hidden');
+            }, 1500);
+        }
 
         // ==========================================
         // INIT & NAV
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            hideSplash();
+            updateOnlineStatus();
             initDates();
             switchForm(localStorage.getItem('lastForm') || 'ivig', false);
             meroInit();
@@ -430,12 +1473,10 @@
             const form = document.getElementById(`${formType}Form`);
             if(form) form.classList.add('active');
             
-            // Nav Items
             document.querySelectorAll('#mainNav .nav-item').forEach(n => n.classList.remove('active'));
             const navItem = document.querySelector(`#mainNav .nav-item.${formType}`);
             if(navItem) navItem.classList.add('active');
 
-            // Header & Nav Switching
             const mainNav = document.getElementById('mainNav');
             const meroNav = document.getElementById('meroNav');
             const mainHeader = document.getElementById('mainHeader');
@@ -476,14 +1517,12 @@
         }
 
         // ==========================================
-        // STANDARD FORMS LOGIC (FIXED)
+        // STANDARD FORMS LOGIC
         // ==========================================
         function submitForm(formType) {
             if (isSubmitting) return;
             let data = {};
-            let isValid = true;
 
-            // IVIG Validation & Data
             if (formType === 'ivig') {
                 const pn = document.getElementById('ivigPatientName').value.trim();
                 const age = document.getElementById('ivigAge').value;
@@ -504,8 +1543,6 @@
                     timestamp: new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' })
                 };
             }
-
-            // Albumin Validation & Data
             else if (formType === 'albumin') {
                 const pn = document.getElementById('albuminPatientName').value.trim();
                 const fn = document.getElementById('albuminFileNumber').value.trim();
@@ -525,8 +1562,6 @@
                     timestamp: new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' })
                 };
             }
-
-            // Tigecycline Validation & Data
             else if (formType === 'tigecycline') {
                 const pn = document.getElementById('tigecyclinePatientName').value.trim();
                 const age = document.getElementById('tigecyclineAge').value;
@@ -546,8 +1581,6 @@
                     timestamp: new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' })
                 };
             }
-
-            // Colistin Validation & Data
             else if (formType === 'colistin') {
                 const pn = document.getElementById('colistinPatientName').value.trim();
                 const age = document.getElementById('colistinAge').value;
@@ -572,7 +1605,18 @@
             if(btn) btn.disabled = true;
             if(btnText) btnText.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
 
-            fetch(MAIN_GOOGLE_SCRIPT_URL, { // USE MAIN URL HERE
+            // Check if online
+            if (!navigator.onLine) {
+                // Store for later sync
+                storeOfflineData(formType, data);
+                showToast('Saved offline. Will sync when online.', 'success');
+                isSubmitting = false;
+                if(btn) btn.disabled = false;
+                if(btnText) btnText.textContent = 'إرسال النموذج';
+                return;
+            }
+
+            fetch(MAIN_GOOGLE_SCRIPT_URL, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sheetName: formType, data: data })
@@ -581,6 +1625,36 @@
             .catch(err => { console.error(err); showToast('حدث خطأ أثناء الإرسال', 'error'); })
             .finally(() => { isSubmitting = false; if(btn) btn.disabled = false; if(btnText) btnText.textContent = 'إرسال النموذج'; });
         }
+
+        // Store data for offline sync
+        function storeOfflineData(formType, data) {
+            const offlineData = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+            offlineData.push({ formType, data, timestamp: Date.now() });
+            localStorage.setItem('offlineQueue', JSON.stringify(offlineData));
+        }
+
+        // Sync offline data when online
+        window.addEventListener('online', async () => {
+            const offlineData = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+            if (offlineData.length > 0) {
+                showToast(`Syncing ${offlineData.length} offline entries...`, 'success');
+                
+                for (const item of offlineData) {
+                    try {
+                        await fetch(MAIN_GOOGLE_SCRIPT_URL, {
+                            method: 'POST', mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ sheetName: item.formType, data: item.data })
+                        });
+                    } catch (err) {
+                        console.error('Sync error:', err);
+                    }
+                }
+                
+                localStorage.removeItem('offlineQueue');
+                showToast('All offline data synced!', 'success');
+            }
+        });
 
         // ==========================================
         // MEROPENEM APP LOGIC
@@ -627,15 +1701,15 @@
             document.getElementById('meroDischarged').textContent = discharged;
             document.getElementById('meroVials').textContent = vials.toFixed(1);
             const container = document.getElementById('meroRecentList');
-            if(meroRecords.length === 0) container.innerHTML = '<p class="text-center text-slate-400 text-sm">No patients yet.</p>';
-            else container.innerHTML = meroRecords.slice(0, 5).map(r => `<div class="patient-card-mero flex justify-between items-center" onclick="meroViewPatient(${r.id})"><div><h4 class="font-bold text-slate-800">${r.patientName}</h4><p class="text-xs text-slate-500">${r.diagnosis}</p></div><span class="badge ${r.status === 'Admitted' ? 'badge-success' : 'badge-warning'}">${r.status}</span></div>`).join('');
+            if(meroRecords.length === 0) container.innerHTML = '<p class="text-center text-sm" style="color: var(--text-muted);">No patients yet.</p>';
+            else container.innerHTML = meroRecords.slice(0, 5).map(r => `<div class="patient-card-mero flex justify-between items-center" onclick="meroViewPatient(${r.id})"><div><h4 class="font-bold" style="color: var(--text-primary);">${r.patientName}</h4><p class="text-xs" style="color: var(--text-muted);">${r.diagnosis}</p></div><span class="badge ${r.status === 'Admitted' ? 'badge-success' : 'badge-warning'}">${r.status}</span></div>`).join('');
         }
 
         function meroRenderList(filter = null) {
             const list = filter || meroRecords;
             const container = document.getElementById('meroPatientListContainer');
-            if(list.length === 0) { container.innerHTML = '<div class="text-center text-slate-400 mt-10">No patients found.</div>'; return; }
-            container.innerHTML = list.map(r => `<div class="patient-card-mero" onclick="meroViewPatient(${r.id})"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-slate-800">${r.patientName}</h4><span class="badge ${r.status === 'Admitted' ? 'badge-success' : 'badge-warning'}">${r.status}</span></div><div class="flex gap-4 text-xs text-slate-500"><span><i class="fas fa-user mr-1"></i>${r.age} yrs</span><span><i class="fas fa-procedures mr-1"></i>Day ${r.currentHospitalDay || 1}</span><span><i class="fas fa-weight mr-1"></i>${r.totalAmount ? r.totalAmount.toFixed(1) : 0}g</span></div></div>`).join('');
+            if(list.length === 0) { container.innerHTML = '<div class="text-center mt-10" style="color: var(--text-muted);">No patients found.</div>'; return; }
+            container.innerHTML = list.map(r => `<div class="patient-card-mero" onclick="meroViewPatient(${r.id})"><div class="flex justify-between items-center mb-2"><h4 class="font-bold" style="color: var(--text-primary);">${r.patientName}</h4><span class="badge ${r.status === 'Admitted' ? 'badge-success' : 'badge-warning'}">${r.status}</span></div><div class="flex gap-4 text-xs" style="color: var(--text-muted);"><span><i class="fas fa-user mr-1"></i>${r.age} yrs</span><span><i class="fas fa-procedures mr-1"></i>Day ${r.currentHospitalDay || 1}</span><span><i class="fas fa-weight mr-1"></i>${r.totalAmount ? r.totalAmount.toFixed(1) : 0}g</span></div></div>`).join('');
         }
         
         function meroFilter() { const term = document.getElementById('meroSearch').value.toLowerCase(); const filtered = meroRecords.filter(r => r.patientName.toLowerCase().includes(term)); meroRenderList(filtered); }
@@ -666,9 +1740,9 @@
             const r = meroCurrentPatient;
             const content = document.getElementById('meroDetailContent');
             let updatesHtml = '';
-            if(r.dailyUpdates && r.dailyUpdates.length > 0) updatesHtml = r.dailyUpdates.map(u => `<div class="p-3 bg-white/50 rounded-lg text-sm mb-2 border border-slate-100"><div class="flex justify-between text-slate-500 mb-1"><span>Day ${u.day}</span><span>${new Date(u.date).toLocaleDateString()}</span></div><p class="text-slate-700">Dispensed: ${u.meropenem1gQuantity}x1g + ${u.meropenem0_5gQuantity}x0.5g</p></div>`).join('');
-            else updatesHtml = '<p class="text-sm text-slate-400 text-center py-4">No updates yet.</p>';
-            content.innerHTML = `<div class="mero-card text-center mb-4"><h2 class="text-2xl font-bold text-slate-800">${r.patientName}</h2><p class="text-slate-500">${r.age} yrs | ${r.gender}</p><span class="badge ${r.status === 'Admitted' ? 'badge-success' : 'badge-warning'} mt-2">${r.status}</span></div><div class="grid grid-cols-3 gap-3 mb-4"><div class="stat-box"><h4 class="text-indigo-600">${r.currentHospitalDay || 1}</h4><p>Day</p></div><div class="stat-box"><h4 class="text-indigo-600">${r.totalAmount ? r.totalAmount.toFixed(1) : 0}</h4><p>Grams</p></div><div class="stat-box"><h4 class="text-indigo-600">${r.frequency}h</h4><p>Freq</p></div></div><div class="mero-card mb-4"><h3 class="font-bold mb-2 text-indigo-700">Details</h3><div class="text-sm space-y-1 text-slate-600"><p><span class="font-bold text-slate-700">Diagnosis:</span> ${r.diagnosis}</p><p><span class="font-bold text-slate-700">Dose:</span> ${r.dosing}</p><p><span class="font-bold text-slate-700">Sensitivity:</span> ${r.sensitivityTest}</p></div></div><div class="mero-card mb-4"><h3 class="font-bold mb-2 text-indigo-700">History</h3>${updatesHtml}</div>${r.status === 'Admitted' ? `<div class="grid grid-cols-2 gap-3"><button class="mero-btn mero-btn-primary" onclick="openMeroModal(${r.id})"><i class="fas fa-plus"></i> Daily Update</button><button class="mero-btn mero-btn-success" onclick="meroDischarge(${r.id})"><i class="fas fa-home"></i> Discharge</button></div>` : `<div class="mero-card bg-emerald-50 border-emerald-200 text-center"><p class="text-emerald-700 font-bold">Patient Discharged</p><p class="text-xs text-slate-500 mt-1">Duration: ${r.duration} days. Data synced to sheet.</p></div>`}`;
+            if(r.dailyUpdates && r.dailyUpdates.length > 0) updatesHtml = r.dailyUpdates.map(u => `<div class="neu-card-inset text-sm mb-3" style="padding: 14px;"><div class="flex justify-between mb-2" style="color: var(--text-muted);"><span>Day ${u.day}</span><span>${new Date(u.date).toLocaleDateString()}</span></div><p style="color: var(--text-primary);">Dispensed: ${u.meropenem1gQuantity}x1g + ${u.meropenem0_5gQuantity}x0.5g</p></div>`).join('');
+            else updatesHtml = '<p class="text-sm text-center py-4" style="color: var(--text-muted);">No updates yet.</p>';
+            content.innerHTML = `<div class="neu-card text-center mb-5"><h2 class="text-2xl font-bold" style="color: var(--text-primary);">${r.patientName}</h2><p style="color: var(--text-muted);">${r.age} yrs | ${r.gender}</p><span class="badge ${r.status === 'Admitted' ? 'badge-success' : 'badge-warning'} mt-3">${r.status}</span></div><div class="grid grid-cols-3 gap-3 mb-5"><div class="stat-box"><h4 style="color: #6366f1;">${r.currentHospitalDay || 1}</h4><p>Day</p></div><div class="stat-box"><h4 style="color: #6366f1;">${r.totalAmount ? r.totalAmount.toFixed(1) : 0}</h4><p>Grams</p></div><div class="stat-box"><h4 style="color: #6366f1;">${r.frequency}h</h4><p>Freq</p></div></div><div class="neu-card mb-5"><h3 class="font-bold mb-3" style="color: #6366f1;">Details</h3><div class="text-sm space-y-2" style="color: var(--text-secondary);"><p><span class="font-bold" style="color: var(--text-primary);">Diagnosis:</span> ${r.diagnosis}</p><p><span class="font-bold" style="color: var(--text-primary);">Dose:</span> ${r.dosing}</p><p><span class="font-bold" style="color: var(--text-primary);">Sensitivity:</span> ${r.sensitivityTest}</p></div></div><div class="neu-card mb-5"><h3 class="font-bold mb-3" style="color: #6366f1;">History</h3>${updatesHtml}</div>${r.status === 'Admitted' ? `<div class="grid grid-cols-2 gap-4"><button class="mero-btn mero-btn-primary" onclick="openMeroModal(${r.id})"><i class="fas fa-plus"></i> Daily Update</button><button class="mero-btn mero-btn-success" onclick="meroDischarge(${r.id})"><i class="fas fa-home"></i> Discharge</button></div>` : `<div class="neu-card text-center" style="background: linear-gradient(145deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));"><p class="font-bold" style="color: #10b981;">Patient Discharged</p><p class="text-xs mt-2" style="color: var(--text-muted);">Duration: ${r.duration} days. Data synced to sheet.</p></div>`}`;
             meroShowPage('meroPatientDetail');
         }
 
@@ -698,7 +1772,10 @@
                 const data = getRequest.result;
                 data.status = 'Discharged'; data.dischargeDate = new Date().toISOString(); data.synced = true; store.put(data);
                 const payload = { timestamp: data.createdAt, patientName: data.patientName, age: data.age, gender: data.gender, diagnosis: data.diagnosis, dosing: data.dosing, sensitivityTest: data.sensitivityTest, frequency: data.frequency, duration: data.duration, pharmacistId: data.pharmacistId, meropenem1gQuantity: data.meropenem1gQuantity, meropenem0_5gQuantity: data.meropenem0_5gQuantity, syncStatus: 'Synced' };
-                fetch(MERO_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                
+                if (navigator.onLine) {
+                    fetch(MERO_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                }
             };
             tx.oncomplete = () => { showToast('Patient Discharged & Synced', 'success'); meroLoadRecords().then(() => meroViewPatient(id)); };
         }
