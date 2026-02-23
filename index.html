@@ -1543,6 +1543,9 @@
         // ==========================================
         // STANDARD FORMS LOGIC
         // ==========================================
+                // ==========================================
+        // STANDARD FORMS LOGIC
+        // ==========================================
         function submitForm(formType) {
             if (isSubmitting) return;
             let data = {};
@@ -1629,11 +1632,10 @@
             if(btn) btn.disabled = true;
             if(btnText) btnText.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
 
-            // Check if online
             if (!navigator.onLine) {
-                // Store for later sync
                 storeOfflineData(formType, data);
                 showToast('Saved offline. Will sync when online.', 'success');
+                clearFormFields(formType); // Clear form on offline save
                 isSubmitting = false;
                 if(btn) btn.disabled = false;
                 if(btnText) btnText.textContent = 'إرسال النموذج';
@@ -1645,40 +1647,58 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sheetName: formType, data: data })
             })
-            .then(() => { showToast('تم إرسال البيانات بنجاح', 'success'); })
+            .then(() => { 
+                showToast('تم إرسال البيانات بنجاح', 'success');
+                clearFormFields(formType); // Clear form after success
+            })
             .catch(err => { console.error(err); showToast('حدث خطأ أثناء الإرسال', 'error'); })
             .finally(() => { isSubmitting = false; if(btn) btn.disabled = false; if(btnText) btnText.textContent = 'إرسال النموذج'; });
         }
 
-        // Store data for offline sync
         function storeOfflineData(formType, data) {
             const offlineData = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
             offlineData.push({ formType, data, timestamp: Date.now() });
             localStorage.setItem('offlineQueue', JSON.stringify(offlineData));
         }
 
-        // Sync offline data when online
-        window.addEventListener('online', async () => {
-            const offlineData = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
-            if (offlineData.length > 0) {
-                showToast(`Syncing ${offlineData.length} offline entries...`, 'success');
-                
-                for (const item of offlineData) {
-                    try {
-                        await fetch(MAIN_GOOGLE_SCRIPT_URL, {
-                            method: 'POST', mode: 'no-cors',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ sheetName: item.formType, data: item.data })
-                        });
-                    } catch (err) {
-                        console.error('Sync error:', err);
-                    }
-                }
-                
-                localStorage.removeItem('offlineQueue');
-                showToast('All offline data synced!', 'success');
+        // ==========================================
+        // CLEAR FORM FUNCTION
+        // ==========================================
+        function clearFormFields(formType) {
+            if (formType === 'ivig') {
+                document.getElementById('ivigPatientName').value = '';
+                document.getElementById('ivigAge').value = '';
+                document.getElementById('ivigDiagnosis').value = '';
+                document.getElementById('ivigDosage').value = '';
+                document.getElementById('ivigPharmacist').value = '';
+                document.getElementById('ivigWard').value = '';
+                document.getElementById('ivigResponse').value = '';
+            } 
+            else if (formType === 'albumin') {
+                document.getElementById('albuminPatientName').value = '';
+                document.getElementById('albuminFileNumber').value = '';
+                document.getElementById('albuminDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('albuminFloor').value = '';
+                document.getElementById('albuminDiagnosis').value = '';
+                document.getElementById('albuminQuantity').value = '';
+            } 
+            else if (formType === 'tigecycline') {
+                document.getElementById('tigecyclinePatientName').value = '';
+                document.getElementById('tigecyclineAge').value = '';
+                document.getElementById('tigecyclineGender').value = '';
+                document.getElementById('tigecyclineDiagnosis').value = '';
+                document.getElementById('tigecyclineDosage').value = '';
+                document.getElementById('tigecyclinePharmacist').value = '';
+            } 
+            else if (formType === 'colistin') {
+                document.getElementById('colistinPatientName').value = '';
+                document.getElementById('colistinAge').value = '';
+                document.getElementById('colistinGender').value = '';
+                document.getElementById('colistinStartDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('colistinDosage').value = '';
+                document.getElementById('colistinPharmacist').value = '';
             }
-        });
+        }
 
         // ==========================================
         // MEROPENEM APP LOGIC
