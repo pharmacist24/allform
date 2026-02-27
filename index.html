@@ -936,9 +936,9 @@
                     <label class="form-label required">العدد</label>
                     <input type="number" class="form-input" id="albuminQuantity" placeholder="أدخل العدد" min="1">
                 </div>
-                        <div>
-                    <label class="form-label">اسم الصيدلي المسؤول</label>
-                    <input type="text" class="form-input" id="ivigPharmacist" placeholder="اسم الصيدلي">
+                <div>
+                    <label class="form-label required">اسم الصيدلي</label>
+                    <input type="text" class="form-input" id="albuminPharmacist" placeholder="أدخل اسم الصيدلي">
                 </div>
                 <button type="button" class="btn-submit btn-albumin" onclick="submitForm('albumin')">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1076,8 +1076,6 @@
                     <label class="form-label required">التشخيص</label>
                     <select class="form-input" id="colistinDiagnosis" dir="ltr">
                         <option value="serious infection due to selected aerobic g negative bacteria in patient with limited treatment option">Serious infection due to selected aerobic G-negative bacteria in patient with limited treatment option</option>
-                        <option value="Management of chronic pulmonary infections due to Pseudomonas aeruginosa in patients with cystic fibrosis">Management of chronic pulmonary infections due to Pseudomonas aeruginosa in patients with cystic fibrosis</option>
-
                     </select>
                 </div>
                 <div>
@@ -1656,16 +1654,16 @@
                 const floor = document.getElementById('albuminFloor').value;
                 const diag = document.getElementById('albuminDiagnosis').value;
                 const qty = document.getElementById('albuminQuantity').value;
+                const pharm = document.getElementById('albuminPharmacist').value.trim();
 
-
-                if (!pn || !fn || !date || !floor || !diag || !qty) { showToast('يرجى ملء جميع الحقول المطلوبة', 'error'); return; }
+                if (!pn || !fn || !date || !floor || !diag || !qty || !pharm) { showToast('يرجى ملء جميع الحقول المطلوبة', 'error'); return; }
 
                 data = {
                     department: 'دائرة مدينة الطب',
                     hospital: 'مستشفى بغداد التعليمي',
                     patientName: pn, fileNumber: fn, date: date,
                     month: new Date(date).toLocaleDateString('ar-IQ', { month: 'long' }),
-                    floor: floor, diagnosis: diag, quantity: qty,
+                    floor: floor, diagnosis: diag, quantity: qty, pharmacist: pharm,
                     timestamp: new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' })
                 };
             }
@@ -1770,6 +1768,7 @@
                 document.getElementById('albuminFloor').value = '';
                 document.getElementById('albuminDiagnosis').value = '';
                 document.getElementById('albuminQuantity').value = '';
+                document.getElementById('albuminPharmacist').value = '';
             } 
             else if (formType === 'tigecycline') {
                 document.getElementById('tigecyclinePatientName').value = '';
@@ -1940,4 +1939,4 @@
         function meroCalcEGFR() { const method = document.getElementById('meroMethod').value; const scr = parseFloat(document.getElementById('meroScr').value); const age = parseInt(document.getElementById('meroAgeCalc').value); const gender = document.getElementById('meroGenderCalc').value; const wt = parseFloat(document.getElementById('meroWtCalc').value); if(!scr || !age) { showToast('Enter Creatinine and Age', 'error'); return; } let result = 0; const k = (gender === 'female') ? 0.7 : 0.9; const a = (gender === 'female') ? -0.329 : -0.411; const f = (gender === 'female') ? 1.018 : 1; if(method === 'ckdepi') result = 141 * Math.pow(Math.min(scr/k, 1), a) * Math.pow(Math.max(scr/k, 1), -1.209) * Math.pow(0.993, age) * f; else if(method === 'mdrd') result = 175 * Math.pow(scr, -1.154) * Math.pow(age, -0.203) * (gender === 'female' ? 0.742 : 1); else if(method === 'cg') { if(!wt) { showToast('Enter weight for Cockcroft-Gault', 'error'); return; } result = ((140 - age) * wt) / (72 * scr) * (gender === 'female' ? 0.85 : 1); } document.getElementById('meroEGFRResult').classList.remove('hidden'); document.getElementById('meroEGFRVal').textContent = Math.round(result); let stage = ''; if(result >= 90) stage = 'Normal'; else if(result >= 60) stage = 'Mild Decrease'; else if(result >= 30) stage = 'Moderate Decrease'; else stage = 'Severe Decrease'; document.getElementById('meroEGFRStage').textContent = stage; }
     </script>
 </body>
-</html>
+</html>        
