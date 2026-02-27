@@ -1656,7 +1656,6 @@
                 const floor = document.getElementById('albuminFloor').value;
                 const diag = document.getElementById('albuminDiagnosis').value;
                 const qty = document.getElementById('albuminQuantity').value;
-                const phn = document.getElementById('pharmacistname').value;
 
 
                 if (!pn || !fn || !date || !floor || !diag || !qty) { showToast('يرجى ملء جميع الحقول المطلوبة', 'error'); return; }
@@ -1667,7 +1666,6 @@
                     patientName: pn, fileNumber: fn, date: date,
                     month: new Date(date).toLocaleDateString('ar-IQ', { month: 'long' }),
                     floor: floor, diagnosis: diag, quantity: qty,
-                    pharmacist: document.getElementById('Pharmacistname').value.trim(),
                     timestamp: new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' })
                 };
             }
