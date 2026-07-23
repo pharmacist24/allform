@@ -60,6 +60,7 @@
             font-family: 'IBM Plex Sans Arabic', sans-serif;
             background: var(--bg-primary);
             min-height: 100vh;
+            min-height: 100dvh; /* Dynamic viewport height for mobile */
             color: var(--text-primary);
             overflow-x: hidden;
         }
@@ -262,8 +263,8 @@
             bottom: 0;
             left: 0; right: 0;
             z-index: 100;
-            padding: 12px 16px;
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            padding: 10px 12px;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -281,14 +282,16 @@
                 0 -4px 20px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden; /* Prevents overflow on small screens */
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            padding: 12px 10px;
+            justify-content: center;
+            gap: 4px;
+            padding: 10px 4px; /* Adjusted padding for better fit */
             border-radius: 16px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -296,6 +299,9 @@
             border: none;
             color: var(--text-muted);
             flex: 1;
+            min-width: 0; /* Crucial for flex items to shrink properly */
+            white-space: nowrap;
+            overflow: hidden;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
             font-size: 10px;
             font-weight: 600;
@@ -311,9 +317,10 @@
         }
 
         .nav-item svg {
-            width: 22px;
-            height: 22px;
+            width: 20px; /* Slightly smaller icon */
+            height: 20px;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .nav-item.active svg { transform: scale(1.15); }
@@ -359,7 +366,8 @@
             gap: 12px;
             animation: toastSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             pointer-events: auto;
-            min-width: 300px;
+            min-width: 280px;
+            max-width: 90vw;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -401,7 +409,11 @@
         }
 
         /* Meropenem Specific Styles */
-        .mero-container { min-height: 100vh; padding-bottom: 100px; }
+        .mero-container { 
+            min-height: 100vh; 
+            min-height: 100dvh; /* Dynamic viewport height */
+            padding-bottom: 120px; /* Ensures content clears the bottom nav */
+        }
         .mero-page { display: none; }
         .mero-page.active { display: block; }
 
@@ -535,6 +547,7 @@
             padding-bottom: max(10px, env(safe-area-inset-bottom));
             display: none;
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden; /* Prevents overflow */
         }
 
         .mero-nav.active {
@@ -667,6 +680,8 @@
             transform: translateX(-50%);
             z-index: 180;
             animation: slideUp 0.4s ease;
+            width: 90%;
+            max-width: 400px;
         }
 
         @keyframes slideUp {
@@ -715,7 +730,7 @@
         }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-32"> <!-- Increased bottom padding to clear fixed nav -->
     <!-- Splash Screen -->
     <div class="splash-screen" id="splashScreen">
         <div class="splash-logo text-center">
@@ -1197,19 +1212,19 @@
     <nav class="mero-nav" id="meroNav">
         <button class="nav-item active" onclick="meroShowPage('meroDashboard')">
             <i class="fas fa-th-large"></i>
-            <span class="text-xs mt-1">Home</span>
+            <span class="text-[10px] mt-1">Home</span>
         </button>
         <button class="nav-item" onclick="meroShowPage('meroPatientList')">
             <i class="fas fa-users"></i>
-            <span class="text-xs mt-1">Patients</span>
+            <span class="text-[10px] mt-1">Patients</span>
         </button>
         <button class="nav-item" onclick="meroShowPage('meroNewPatient')">
             <i class="fas fa-plus-circle"></i>
-            <span class="text-xs mt-1">New</span>
+            <span class="text-[10px] mt-1">New</span>
         </button>
         <button class="nav-item" onclick="meroShowPage('meroEGFR')">
             <i class="fas fa-kidneys"></i>
-            <span class="text-xs mt-1">eGFR</span>
+            <span class="text-[10px] mt-1">eGFR</span>
         </button>
     </nav>
 
