@@ -871,69 +871,20 @@
             </div>
         </section>
 
-        <!-- Colistin Form -->
+        <!-- Colistin External Link -->
         <section class="form-section" id="colistinForm">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold section-title" style="color: #10b981;">Colistin Form</h2>
                 <p class="text-sm mt-3" style="color: var(--text-muted);">Colistin Therapy Record</p>
             </div>
-            <div class="neu-card space-y-5">
-                <div class="readonly-field text-center">
-                    <p class="text-xs mb-1" style="color: var(--text-muted);">اسم المؤسسة</p>
-                    <p class="text-sm font-bold" style="color: var(--text-primary);">دائرة مدينة الطب - مستشفى بغداد التعليمي</p>
-                </div>
-                <div class="divider"></div>
-                <div>
-                    <label class="form-label required">اسم المريض</label>
-                    <input type="text" class="form-input" id="colistinPatientName" placeholder="أدخل اسم المريض">
-                </div>
-                <div>
-                    <label class="form-label required">العمر</label>
-                    <input type="number" class="form-input" id="colistinAge" placeholder="العمر" min="0" max="150">
-                </div>
-                <div>
-                    <label class="form-label required">الجنس</label>
-                    <select class="form-input" id="colistinGender">
-                        <option value="">اختر الجنس</option>
-                        <option value="ذكر">ذكر</option>
-                        <option value="انثى">انثى</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label required">الردهة</label>
-                    <select class="form-input" id="colistinWard">
-                        <option value="">اختر الردهة</option>
-                        <option value="الردهة الباطنية">الردهة الباطنية</option>
-                        <option value="الردهة الجراحية">الردهة الجراحية</option>
-                        <option value="الخدج">الخدج</option>
-                        <option value="العناية المركزه">العناية المركزه</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label required">التشخيص</label>
-                    <select class="form-input" id="colistinDiagnosis" dir="ltr">
-                        <option value="serious infection due to selected aerobic g negative bacteria in patient with limited treatment option">Serious infection due to selected aerobic G-negative bacteria in patient with limited treatment option</option>
-                        <option value="Management of chronic pulmonary infection due to Pseudomonas aeruginosa in patient with cystic fibrosis">Management of chronic pulmonary infection due to Pseudomonas aeruginosa in patient with cystic fibrosis</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label required">تاريخ بدء العلاج</label>
-                    <input type="date" class="form-input" id="colistinStartDate" dir="ltr">
-                </div>
-                <div>
-                    <label class="form-label required">الجرعة</label>
-                    <input type="text" class="form-input" id="colistinDosage" placeholder="35000X2">
-                </div>
-                <div>
-                    <label class="form-label required">اسم الصيدلي</label>
-                    <input type="text" class="form-input" id="colistinPharmacist" placeholder="أدخل اسم الصيدلي">
-                </div>
-                <button type="button" class="btn-submit btn-colistin" onclick="submitForm('colistin')">
+            <div class="neu-card text-center py-10">
+                <p class="mb-6" style="color: var(--text-secondary);">Please click the button below to proceed to the Colistin Google Form.</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLScKnP4IrG9HDHYlHnGr7AYPIVwAMRQTWEYRzm8J0P9fd1B20w/viewform" target="_blank" rel="noopener noreferrer" class="btn-submit btn-colistin" style="max-width: 300px; margin: 0 auto; text-decoration: none;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                     </svg>
-                    <span id="colistinBtnText">إرسال النموذج</span>
-                </button>
+                    <span>Open Colistin Form</span>
+                </a>
             </div>
         </section>
 
@@ -1409,7 +1360,6 @@
             const opt = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('currentDate').textContent = now.toLocaleDateString('ar-IQ', opt);
             const today = now.toISOString().split('T')[0];
-            if (document.getElementById('colistinStartDate')) document.getElementById('colistinStartDate').value = today;
         }
 
         function switchForm(formType, saveState = true) {
@@ -1462,31 +1412,12 @@
         }
 
         // ==========================================
-        // STANDARD FORMS LOGIC (COLISTIN ONLY)
+        // STANDARD FORMS LOGIC
+        // (Colistin is now an external Google Form link — no local submission)
         // ==========================================
         function submitForm(formType) {
             if (isSubmitting) return;
             let data = {};
-
-            if (formType === 'colistin') {
-                const pn = document.getElementById('colistinPatientName').value.trim();
-                const age = document.getElementById('colistinAge').value;
-                const gen = document.getElementById('colistinGender').value;
-                const ward = document.getElementById('colistinWard').value;
-                const diag = document.getElementById('colistinDiagnosis').value;
-                const sd = document.getElementById('colistinStartDate').value;
-                const dose = document.getElementById('colistinDosage').value.trim();
-                const pharm = document.getElementById('colistinPharmacist').value.trim();
-
-                if (!pn || !age || !gen || !ward || !sd || !dose || !pharm) { showToast('يرجى ملء جميع الحقول المطلوبة', 'error'); return; }
-
-                data = {
-                    institution: 'دائرة مدينة الطب - مستشفى بغداد التعليمي',
-                    patientName: pn, age: age, gender: gen, ward: ward,
-                    diagnosis: diag, startDate: sd, dosage: dose, pharmacist: pharm,
-                    timestamp: new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' })
-                };
-            }
 
             isSubmitting = true;
             const btn = document.querySelector(`.btn-${formType}`);
@@ -1524,18 +1455,10 @@
         }
 
         // ==========================================
-        // CLEAR FORM FUNCTION (COLISTIN ONLY)
+        // CLEAR FORM FUNCTION
         // ==========================================
         function clearFormFields(formType) {
-            if (formType === 'colistin') {
-                document.getElementById('colistinPatientName').value = '';
-                document.getElementById('colistinAge').value = '';
-                document.getElementById('colistinGender').value = '';
-                document.getElementById('colistinWard').value = '';
-                document.getElementById('colistinStartDate').value = new Date().toISOString().split('T')[0];
-                document.getElementById('colistinDosage').value = '';
-                document.getElementById('colistinPharmacist').value = '';
-            }
+            // Colistin is now an external Google Form link — no local fields to clear.
         }
 
         // ==========================================
